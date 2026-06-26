@@ -1,6 +1,5 @@
 # Práctica Formativa Obligatoria 2: Prompt en Agentes de IA
 **Asignatura:** Desarrollo de Sistemas Front End
-**Docente**:
 ---
 
 ## 👤 Datos del Estudiante
