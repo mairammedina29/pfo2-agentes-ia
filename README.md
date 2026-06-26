@@ -12,7 +12,7 @@
 
 ## 🔗 Enlaces del Proyecto
 * **Repositorio GitHub:** [GitHub](https://github.com/mairammedina29/pfo2-agentes-ia)
-* **Despliegue Unificado (Vercel):** [Link de tu Deploy en Vercel]
+* **Despliegue Unificado (Vercel):** [Vercel](https://pfo2-agentes-ia.vercel.app/)
 
 ---
 
