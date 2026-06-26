@@ -48,9 +48,6 @@ El proyecto se organizó de manera modular y siguiendo las buenas prácticas de 
     └── index.html                  
 
 ```
-
---- 
-
 ---
 
 ## 3. ⚙️ Estructura del Prompt Base 
@@ -72,10 +69,10 @@ Se diseñó un prompt estructurado mediante, asignación de rol, restricciones r
  7. Footer: Pie de página completo con créditos de autoría y enlaces simulados a redes sociales.
 
 * **Diseño del sistema**:
- - -- Tipografías: Utilizar fuentes modernas de Google Fonts legibles y estéticas.
- - -- Paleta de Colores: Definir un contraste armónico de colores (un color primario dominante, uno secundario de apoyo y un color de acento brillante para llamadas a la acción).
- - -- Diseño Responsivo: Implementar obligatoriamente Flexbox y CSS Grid junto con Media Queries técnicas. No se permite el desbordamiento horizontal (overflow-x).
- - -- Interactividad: Añadir transiciones suaves (`transition`) en botones, enlaces y tarjetas al pasar el cursor (:hover).
+ - Tipografías: Utilizar fuentes modernas de Google Fonts legibles y estéticas.
+ - Paleta de Colores: Definir un contraste armónico de colores (un color primario dominante, uno secundario de apoyo y un color de acento brillante para llamadas a la acción).
+ - Diseño Responsivo: Implementar obligatoriamente Flexbox y CSS Grid junto con Media Queries técnicas. No se permite el desbordamiento horizontal (overflow-x).
+ - Interactividad: Añadir transiciones suaves (`transition`) en botones, enlaces y tarjetas al pasar el cursor (:hover).
 
 * **Restricciones**:
  - Todo el código debe estar modularizado y limpio. Comentarios oportunos pero no excesivos.
