@@ -41,7 +41,8 @@ El proyecto se organizó de manera modular y siguiendo las buenas prácticas de 
 ├── assets/                         
 │   ├── img2.jpg                    
 │   ├── img3.png                    
-│   └── img4.png                    
+│   └── img4.png
+│   └── imgRm/                    
 ├── landing-agente-1/
 │   └── arcade-hud-v2-animated.html 
 └── landing-agente-2/
