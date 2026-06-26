@@ -93,7 +93,7 @@ Se diseñó un prompt estructurado mediante, asignación de rol, restricciones r
 
 ## 5. 📸 Capturas de Pantalla 
 
-### Landing Page 1 - Generada por Claude coce
+### Landing Page 1 - Generada por Claude code
 | Vista 1 | Vista 2 |
 | :---: | :---: |
 | <img src="assets/imgRm/img6.png" width="300"> | <img src="assets/imgRm/img8.png" width="300"> |
@@ -111,7 +111,7 @@ Se diseñó un prompt estructurado mediante, asignación de rol, restricciones r
 | <img src="assets/imgRm/img23.png" width="300"> | <img src="assets/imgRm/img22.png" width="300"> |
 
 
-### Landing Page 2 - Generada por Opend Code
+### Landing Page 2 - Generada por Open Code
 
 | Vista 1 | Vista 2 |
 | :---: | :---: |
