@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCADE HUD - Tienda Retro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg-gradient:linear-gradient(135deg,#03001e 0%,#7303c0 50%,#ec38bc 100%);
+  --text-title-color:#00F2FE;
+  --text-subtitle-color:#FFF200;
+  --text-desc-color:#E2E8F0;
+  --grid-color:rgba(0,242,254,0.15);
+  --grid-glow:0 0 12px rgba(0,242,254,0.75);
+  --color-tomato:#FF0055;
+  --bg-card:rgba(0,0,0,0.45);
+  --header-bg:rgba(3,0,30,0.8);
+  transition:background 0.4s,color 0.4s
+}
+
+body.light-mode{
+  --bg-gradient:linear-gradient(135deg,#eef2f7 0%,#d9e2ec 100%);
+  --text-title-color:#0F172A;
+  --text-subtitle-color:#FF5500;
+  --text-desc-color:#334155;
+  --grid-color:rgba(255,85,0,0.2);
+  --grid-glow:0 0 10px rgba(255,85,0,0.6);
+  --color-tomato:#FF5500;
+  --bg-card:rgba(255,255,255,0.65);
+  --header-bg:rgba(238,242,247,0.88)
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Share Tech Mono',monospace;
+  background:var(--bg-gradient);
+  color:var(--text-desc-color);
+  min-height:100vh;
+  transition:background 0.4s,color 0.4s;
+  overflow-x:hidden
+}
+
+h1,h2,h3,h4,h5,h6,button,.nav-link,.logo-text,.cta-btn,.section-label,.service-title,.testimonial-speaker,.footer-link{
+  font-family:'Orbitron',sans-serif;
+  text-transform:uppercase
+}
+
+/* ===== GLOBAL GRID BG ===== */
+.grid-bg{
+  position:fixed;inset:0;
+  pointer-events:none;z-index:0;
+  background-image:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px);
+  background-size:45px 45px;
+  filter:drop-shadow(var(--grid-glow));
+  transition:background 0.4s,filter 0.4s
+}
+
+/* ===== CRT SCANLINES OVERLAY ===== */
+.crt-overlay{
+  position:fixed;inset:0;
+  pointer-events:none;z-index:9998;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.055) 2px,rgba(0,0,0,0.055) 4px)
+}
+
+.crt-overlay::after{
+  content:'';
+  position:absolute;
+  left:0;right:0;
+  height:80px;
+  background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,0.025) 45%,rgba(255,255,255,0.04) 50%,rgba(255,255,255,0.025) 55%,transparent 100%);
+  animation:crtSweep 7s linear infinite;
+  will-change:transform
+}
+
+@keyframes crtSweep{
+  0%{top:-80px}
+  100%{top:100%}
+}
+
+/* ===== CONTENT WRAPPER ===== */
+.content-wrapper{
+  position:relative;z-index:1
+}
+
+/* ===== HEADER ===== */
+header{
+  position:fixed;top:0;left:0;right:0;
+  z-index:100;
+  padding:10px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--header-bg);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:2px solid var(--text-title-color);
+  transition:background 0.4s,border-color 0.4s;
+  box-shadow:0 0 20px rgba(0,242,254,0.12)
+}
+
+.logo-text{
+  font-size:1.4rem;font-weight:900;
+  color:var(--text-title-color);
+  letter-spacing:4px;
+  text-shadow:0 0 10px var(--text-title-color),0 0 30px var(--text-title-color),0 0 60px var(--text-title-color);
+  animation:neonPulse 2s ease-in-out infinite alternate;
+  transition:color 0.4s,text-shadow 0.4s;
+  will-change:transform,opacity
+}
+
+@keyframes neonPulse{
+  0%{text-shadow:0 0 5px var(--text-title-color),0 0 15px var(--text-title-color),0 0 30px var(--text-title-color)}
+  100%{text-shadow:0 0 15px var(--text-title-color),0 0 40px var(--text-title-color),0 0 70px var(--text-title-color),0 0 100px var(--text-title-color)}
+}
+
+.nav-links{
+  display:flex;align-items:center;gap:24px;list-style:none
+}
+
+.nav-links a{
+  color:var(--text-desc-color);text-decoration:none;
+  font-family:'Orbitron',sans-serif;text-transform:uppercase;
+  font-size:0.65rem;letter-spacing:2px;
+  padding:6px 10px;
+  border:1px solid transparent;
+  transition:all 0.4s;position:relative;
+  min-width:0
+}
+
+.nav-links a::after{
+  content:'';position:absolute;
+  bottom:-2px;left:50%;
+  width:0;height:2px;
+  background:var(--text-title-color);
+  transition:all 0.3s;transform:translateX(-50%)
+}
+
+.nav-links a:hover::after{width:80%}
+.nav-links a:hover{color:var(--text-title-color)}
+
+.toggle-btn{
+  background:transparent;
+  border:2px solid var(--text-title-color);
+  color:var(--text-title-color);
+  font-family:'Orbitron',sans-serif;font-size:0.55rem;
+  letter-spacing:1px;padding:5px 12px;
+  cursor:pointer;transition:all 0.4s;
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;
+  min-width:0
+}
+.toggle-btn:hover{
+  background:var(--text-title-color);color:#03001e;
+  box-shadow:0 0 20px var(--text-title-color)
+}
+.toggle-btn .icon-sun{display:none}
+body.light-mode .toggle-btn .icon-moon{display:none}
+body.light-mode .toggle-btn .icon-sun{display:inline}
+
+/* ===== MARQUEE TICKER ===== */
+.marquee-wrap{
+  position:fixed;top:58px;left:0;right:0;
+  z-index:99;
+  background:rgba(0,0,0,0.6);
+  border-bottom:1px solid var(--text-subtitle-color);
+  overflow:hidden;
+  height:30px;
+  display:flex;align-items:center;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  transition:background 0.4s,border-color 0.4s
+}
+
+body.light-mode .marquee-wrap{
+  background:rgba(255,255,255,0.6)
+}
+
+.marquee-track{
+  display:flex;
+  white-space:nowrap;
+  animation:marqueeScroll 28s linear infinite;
+  will-change:transform
+}
+
+.marquee-wrap:hover .marquee-track{
+  animation-play-state:paused
+}
+
+.marquee-item{
+  display:inline-flex;
+  align-items:center;
+  gap:24px;
+  font-family:'Orbitron',sans-serif;
+  font-size:0.65rem;
+  letter-spacing:3px;
+  color:var(--text-subtitle-color);
+  padding:0 16px;
+  text-transform:uppercase;
+  transition:color 0.4s
+}
+
+.marquee-item .sep{
+  color:var(--text-title-color);
+  animation:flicker 2.8s step-end infinite;
+  transition:color 0.4s
+}
+
+@keyframes marqueeScroll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+
+/* ===== HERO ===== */
+.hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  padding:130px 60px 60px;
+  align-items:center;
+  position:relative
+}
+
+.hero-left,.hero-right{position:relative;z-index:1;min-width:0}
+
+/* Hero left */
+.hero-left h1{
+  font-size:clamp(1.8rem,5vw,3.8rem);
+  font-weight:900;
+  color:var(--text-title-color);
+  line-height:1.1;
+  margin-bottom:16px;
+  position:relative;
+  transition:color 0.4s;
+  text-shadow:0 0 8px var(--text-title-color),0 0 20px var(--text-title-color)
+}
+
+.glitch-title{
+  position:relative;
+  animation:glitchSkew 5s infinite linear alternate-reverse
+}
+
+.glitch-title::before,.glitch-title::after{
+  content:attr(data-text);
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none
+}
+
+.glitch-title::before{
+  color:var(--color-tomato);
+  z-index:-1;
+  animation:glitchTop 2.8s infinite linear alternate-reverse;
+  clip-path:polygon(0 0,100% 0,100% 35%,0 35%);
+  -webkit-clip-path:polygon(0 0,100% 0,100% 35%,0 35%)
+}
+
+.glitch-title::after{
+  color:var(--text-subtitle-color);
+  z-index:-1;
+  animation:glitchBottom 3.4s infinite linear alternate-reverse;
+  clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%);
+  -webkit-clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%)
+}
+
+@keyframes glitchSkew{
+  0%{transform:skew(0deg)}
+  8%{transform:skew(0.4deg)}
+  16%{transform:skew(-0.3deg)}
+  24%{transform:skew(0deg)}
+  32%{transform:skew(0.6deg)}
+  40%{transform:skew(-0.2deg)}
+  48%{transform:skew(0deg)}
+  100%{transform:skew(0deg)}
+}
+@keyframes glitchTop{
+  0%{transform:translate(0)}
+  12%{transform:translate(-2px,-1px)}
+  24%{transform:translate(2px,1px)}
+  36%{transform:translate(-1px,2px)}
+  48%{transform:translate(1px,-1px)}
+  60%{transform:translate(-2px,1px)}
+  72%{transform:translate(0)}
+  100%{transform:translate(0)}
+}
+@keyframes glitchBottom{
+  0%{transform:translate(0)}
+  10%{transform:translate(2px,1px)}
+  20%{transform:translate(-2px,-1px)}
+  30%{transform:translate(1px,-2px)}
+  40%{transform:translate(-1px,1px)}
+  50%{transform:translate(2px,-1px)}
+  60%{transform:translate(-2px,2px)}
+  70%{transform:translate(1px,1px)}
+  80%{transform:translate(0)}
+  100%{transform:translate(0)}
+}
+
+.hero-left .subtitle{
+  font-size:clamp(0.85rem,2vw,1.3rem);
+  font-weight:700;
+  color:var(--text-subtitle-color);
+  letter-spacing:6px;
+  margin-bottom:12px;
+  transition:color 0.4s
+}
+
+.hero-left .desc{
+  font-size:0.9rem;line-height:1.7;
+  color:var(--text-desc-color);
+  max-width:520px;
+  margin-bottom:28px;
+  transition:color 0.4s
+}
+
+.cta-btn{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:16px 40px;
+  background:transparent;
+  border:2px solid var(--text-title-color);
+  color:var(--text-title-color);
+  font-size:0.8rem;font-weight:700;letter-spacing:3px;
+  cursor:pointer;transition:all 0.4s;
+  text-decoration:none;position:relative;overflow:hidden;
+  will-change:transform
+}
+.cta-btn::before{
+  content:'';position:absolute;inset:0;
+  background:var(--color-tomato);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.4s ease;z-index:-1
+}
+.cta-btn:hover{
+  border-color:var(--color-tomato);color:#fff;
+  box-shadow:0 0 30px var(--color-tomato)
+}
+.cta-btn:hover::before{transform:scaleX(1)}
+.cta-btn:active{transform:scale(0.94)}
+
+/* Hero right - grid layer with mask */
+.hero-right{
+  position:relative;
+  min-width:0;
+  perspective:1200px
+}
+
+.hero-right .grid-layer{
+  position:absolute;inset:0;z-index:0;
+  background-image:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px);
+  background-size:45px 45px;
+  -webkit-mask-image:radial-gradient(circle at top left,black 25%,transparent 78%);
+  mask-image:radial-gradient(circle at top left,black 25%,transparent 78%);
+  filter:drop-shadow(var(--grid-glow));
+  pointer-events:none;
+  transition:background 0.4s,filter 0.4s
+}
+
+/* Product cards with 3D hover */
+.hero-right{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:auto auto;
+  gap:18px
+}
+
+.prod-card{
+  background:var(--bg-card);
+  border:2px solid var(--text-title-color);
+  padding:22px 18px;
+  cursor:default;
+  display:flex;flex-direction:column;
+  min-width:0;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  position:relative;z-index:1;
+  transition:transform 0.45s cubic-bezier(0.23,1,0.32,1),box-shadow 0.45s ease,border-color 0.4s,background 0.4s;
+  will-change:transform
+}
+
+.prod-card:first-child{grid-column:1;grid-row:1/3;justify-content:center}
+.prod-card:nth-child(2){grid-column:2;grid-row:1}
+.prod-card:nth-child(3){grid-column:2;grid-row:2}
+
+.prod-card:hover{
+  transform:perspective(1000px) rotateY(5deg) rotateX(-3deg) translateY(-10px) scale(1.02);
+  box-shadow:0 0 30px var(--text-title-color),inset 0 0 30px rgba(0,242,254,0.06);
+  border-color:var(--text-subtitle-color)
+}
+
+.prod-card:nth-child(2):hover{
+  transform:perspective(1000px) rotateY(-4deg) rotateX(2deg) translateY(-8px) scale(1.02)
+}
+
+.prod-card:nth-child(3):hover{
+  transform:perspective(1000px) rotateY(3deg) rotateX(-2deg) translateY(-8px) scale(1.02)
+}
+
+.prod-card .badge{
+  font-family:'Orbitron',sans-serif;font-size:0.5rem;letter-spacing:3px;
+  color:var(--text-subtitle-color);border:1px solid var(--text-subtitle-color);
+  padding:2px 8px;display:inline-block;margin-bottom:10px;
+  transition:color 0.4s,border-color 0.4s
+}
+
+.prod-card h3{
+  font-size:clamp(0.6rem,1.2vw,0.85rem);
+  color:var(--text-title-color);margin-bottom:6px;
+  transition:color 0.4s
+}
+
+.prod-card p{
+  font-size:0.68rem;color:var(--text-desc-color);line-height:1.5;
+  transition:color 0.4s
+}
+
+.prod-card .price{
+  font-family:'Orbitron',sans-serif;
+  font-size:0.95rem;font-weight:700;
+  color:var(--text-subtitle-color);margin-top:10px;
+  transition:color 0.4s
+}
+
+/* ===== ABOUT / INSERT COIN ===== */
+.about{
+  padding:80px 60px;
+  text-align:center;position:relative
+}
+
+.about-inner{
+  max-width:720px;margin:0 auto;
+  border:2px solid var(--text-title-color);
+  padding:50px 40px 40px;
+  background:var(--bg-card);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  transition:border-color 0.4s,background 0.4s;
+  position:relative
+}
+
+.about .coin-label{
+  font-family:'Orbitron',sans-serif;font-size:0.55rem;
+  letter-spacing:10px;color:var(--text-subtitle-color);
+  margin-bottom:14px;transition:color 0.4s;
+  animation:flicker 2.4s step-end infinite
+}
+
+@keyframes flicker{
+  0%,100%{opacity:1}
+  19%{opacity:1}
+  20%{opacity:0.15}
+  21%{opacity:1}
+  23%{opacity:1}
+  24%{opacity:0.1}
+  25%{opacity:1}
+  54%{opacity:1}
+  55%{opacity:0.2}
+  56%{opacity:1}
+  89%{opacity:1}
+  90%{opacity:0.08}
+  91%{opacity:1}
+}
+
+.about h2{
+  font-size:clamp(1.2rem,3vw,2rem);font-weight:900;
+  color:var(--text-title-color);
+  text-shadow:0 0 10px var(--text-title-color);
+  margin-bottom:18px;transition:color 0.4s
+}
+
+.about p{
+  font-size:0.85rem;line-height:1.8;
+  color:var(--text-desc-color);transition:color 0.4s
+}
+
+/* Loading bar */
+.load-track{
+  width:100%;height:8px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid var(--text-title-color);
+  margin-top:24px;position:relative;
+  overflow:hidden;transition:border-color 0.4s
+}
+
+.load-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--text-title-color),var(--text-subtitle-color));
+  box-shadow:0 0 12px var(--text-title-color);
+  animation:loadBar 4.5s ease-in-out infinite;
+  will-change:width;
+  transition:background 0.4s
+}
+
+@keyframes loadBar{
+  0%{width:0%}
+  15%{width:18%}
+  30%{width:35%}
+  45%{width:52%}
+  60%{width:68%}
+  75%{width:80%}
+  88%{width:91%}
+  100%{width:100%}
+}
+
+.load-status{
+  font-family:'Orbitron',sans-serif;
+  font-size:0.5rem;letter-spacing:2px;
+  color:var(--text-title-color);margin-top:8px;
+  text-align:right;transition:color 0.4s;
+  animation:loadPulse 1.8s ease-in-out infinite
+}
+
+@keyframes loadPulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.3}
+}
+
+/* ===== SERVICES ===== */
+.services{
+  padding:80px 60px
+}
+
+.section-label{
+  text-align:center;font-size:0.55rem;letter-spacing:8px;
+  color:var(--text-subtitle-color);margin-bottom:6px;
+  transition:color 0.4s
+}
+
+.services h2{
+  text-align:center;
+  font-size:clamp(1.2rem,3vw,2rem);font-weight:900;
+  color:var(--text-title-color);
+  text-shadow:0 0 10px var(--text-title-color);
+  margin-bottom:40px;transition:color 0.4s
+}
+
+.services-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:24px;max-width:1100px;margin:0 auto
+}
+
+.service-card{
+  background:var(--bg-card);
+  border:2px solid var(--text-title-color);
+  padding:30px 24px;text-align:center;
+  transition:all 0.4s;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  min-width:0;
+  position:relative;overflow:hidden
+}
+
+.service-card::before{
+  content:'';
+  position:absolute;
+  top:-2px;left:-100%;
+  width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--text-title-color),transparent);
+  transition:left 0.6s ease;
+  will-change:transform
+}
+
+.service-card::after{
+  content:'';
+  position:absolute;
+  bottom:-2px;right:-100%;
+  width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--text-subtitle-color),transparent);
+  transition:right 0.6s ease 0.15s;
+  will-change:transform
+}
+
+.service-card:hover::before{left:100%}
+.service-card:hover::after{right:100%}
+.service-card:hover{
+  box-shadow:0 0 25px var(--text-title-color),inset 0 0 20px rgba(0,242,254,0.05);
+  transform:translateY(-5px)
+}
+
+.service-card .icon{
+  font-size:2rem;margin-bottom:14px;display:block
+}
+
+.service-card h3{
+  font-size:0.75rem;color:var(--text-title-color);
+  letter-spacing:3px;margin-bottom:10px;
+  transition:color 0.4s
+}
+
+.service-card p{
+  font-size:0.72rem;color:var(--text-desc-color);line-height:1.7;
+  transition:color 0.4s
+}
+
+/* ===== TESTIMONIALS ===== */
+.testimonials{
+  padding:80px 60px
+}
+
+.testimonials h2{
+  text-align:center;
+  font-size:clamp(1.2rem,3vw,2rem);font-weight:900;
+  color:var(--text-title-color);
+  text-shadow:0 0 10px var(--text-title-color);
+  margin-bottom:40px;transition:color 0.4s
+}
+
+.testimonials-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:24px;max-width:1100px;margin:0 auto
+}
+
+.testimonial-box{
+  background:var(--bg-card);
+  border:2px solid var(--text-title-color);
+  padding:24px;position:relative;
+  transition:all 0.4s;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  min-width:0
+}
+
+.testimonial-box::before{
+  content:'>';
+  position:absolute;top:10px;left:12px;
+  font-family:'Share Tech Mono',monospace;font-size:1rem;
+  color:var(--text-subtitle-color);transition:color 0.4s
+}
+
+.testimonial-box:hover{
+  box-shadow:0 0 20px var(--text-title-color);
+  border-color:var(--text-subtitle-color)
+}
+
+.testimonial-box .quote{
+  font-size:0.78rem;color:var(--text-desc-color);
+  line-height:1.7;padding-left:20px;margin-bottom:14px;
+  transition:color 0.4s;
+  overflow:hidden;
+  clip-path:inset(0 100% 0 0);
+  animation:revealText 1.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards
+}
+
+.testimonial-box:nth-child(2) .quote{animation-delay:0.3s}
+.testimonial-box:nth-child(3) .quote{animation-delay:0.6s}
+
+@keyframes revealText{
+  0%{clip-path:inset(0 100% 0 0)}
+  100%{clip-path:inset(0 0% 0 0)}
+}
+
+.testimonial-box .speaker{
+  font-family:'Orbitron',sans-serif;font-size:0.55rem;
+  letter-spacing:2px;color:var(--text-title-color);
+  text-align:right;transition:color 0.4s
+}
+
+.testimonial-box .speaker::before{
+  content:'-- ';color:var(--text-subtitle-color)
+}
+
+/* ===== CONTACT ===== */
+.contact{
+  padding:80px 60px
+}
+
+.contact h2{
+  text-align:center;
+  font-size:clamp(1.2rem,3vw,2rem);font-weight:900;
+  color:var(--text-title-color);
+  text-shadow:0 0 10px var(--text-title-color);
+  margin-bottom:6px;transition:color 0.4s
+}
+
+.contact .hs-label{
+  text-align:center;font-family:'Orbitron',sans-serif;
+  font-size:0.5rem;letter-spacing:8px;
+  color:var(--text-subtitle-color);margin-bottom:30px;
+  transition:color 0.4s
+}
+
+.contact-form-wrap{
+  max-width:600px;margin:0 auto;
+  border:2px solid var(--text-title-color);
+  padding:40px;
+  background:var(--bg-card);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  transition:border-color 0.4s,background 0.4s
+}
+
+.form-row{
+  margin-bottom:18px;min-width:0
+}
+
+.form-row label{
+  display:block;
+  font-family:'Orbitron',sans-serif;font-size:0.55rem;
+  letter-spacing:3px;color:var(--text-title-color);
+  margin-bottom:6px;transition:color 0.4s
+}
+
+.form-row label::before{
+  content:'> ';color:var(--text-subtitle-color)
+}
+
+.form-row input,.form-row textarea{
+  width:100%;padding:12px 14px;
+  background:rgba(0,0,0,0.25);
+  border:1px solid var(--text-title-color);
+  color:var(--text-desc-color);
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.8rem;transition:all 0.4s;
+  outline:none;min-width:0
+}
+
+body.light-mode .form-row input,
+body.light-mode .form-row textarea{
+  background:rgba(255,255,255,0.5)
+}
+
+.form-row input:focus,.form-row textarea:focus{
+  border-color:var(--text-subtitle-color);
+  box-shadow:0 0 18px var(--text-subtitle-color),inset 0 0 8px rgba(255,85,0,0.1)
+}
+
+.form-row textarea{
+  resize:vertical;min-height:90px
+}
+
+.form-submit{
+  width:100%;padding:14px;
+  background:transparent;
+  border:2px solid var(--text-title-color);
+  color:var(--text-title-color);
+  font-family:'Orbitron',sans-serif;font-size:0.7rem;
+  font-weight:700;letter-spacing:4px;
+  text-transform:uppercase;cursor:pointer;
+  transition:all 0.4s;position:relative;overflow:hidden;
+  will-change:transform
+}
+
+.form-submit::before{
+  content:'';position:absolute;inset:0;
+  background:var(--color-tomato);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.4s ease;z-index:-1
+}
+
+.form-submit:hover{
+  border-color:var(--color-tomato);color:#fff;
+  box-shadow:0 0 30px var(--color-tomato)
+}
+.form-submit:hover::before{transform:scaleX(1)}
+.form-submit:active{transform:scale(0.95)}
+
+/* ===== FOOTER ===== */
+footer{
+  padding:36px 60px 20px;
+  border-top:2px solid var(--text-title-color);
+  transition:border-color 0.4s
+}
+
+.footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:20px
+}
+
+.social-links{
+  display:flex;gap:14px
+}
+
+.social-link{
+  display:flex;align-items:center;justify-content:center;
+  width:38px;height:38px;
+  border:1px solid var(--text-title-color);
+  color:var(--text-title-color);
+  text-decoration:none;
+  font-family:'Orbitron',sans-serif;font-size:0.65rem;
+  letter-spacing:1px;transition:all 0.4s
+}
+
+.social-link:hover{
+  background:var(--text-title-color);
+  animation:socialBlink 0.5s ease 2
+}
+
+body.light-mode .social-link:hover{color:#eef2f7}
+
+@keyframes socialBlink{
+  0%,100%{opacity:1;box-shadow:0 0 10px var(--text-title-color)}
+  50%{opacity:0.5;box-shadow:0 0 0 var(--text-title-color)}
+}
+
+footer .copyright{
+  font-size:0.65rem;color:var(--text-desc-color);
+  transition:color 0.4s;letter-spacing:1px
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:rgba(0,0,0,0.15)}
+::-webkit-scrollbar-thumb{background:var(--text-title-color);border-radius:3px;transition:background 0.4s}
+
+::selection{background:var(--text-title-color);color:#03001e}
+body.light-mode ::selection{background:var(--text-subtitle-color);color:#fff}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  header{padding:10px 20px}
+  .logo-text{font-size:1rem;letter-spacing:2px}
+  .nav-links a{font-size:0.55rem;padding:4px 6px}
+  .nav-links{gap:10px}
+  .toggle-btn{font-size:0.45rem;padding:4px 8px}
+
+  .marquee-wrap{top:50px}
+  .marquee-item{font-size:0.5rem;letter-spacing:1px}
+  .marquee-item .sep{margin:0 8px}
+
+  .hero{grid-template-columns:1fr;padding:110px 24px 40px;gap:28px}
+  .hero-left h1{font-size:clamp(1.4rem,7vw,2.2rem)}
+  .hero-left .subtitle{font-size:clamp(0.65rem,3vw,0.9rem);letter-spacing:4px}
+  .hero-left .desc{font-size:0.8rem}
+  .cta-btn{padding:14px 24px;font-size:0.7rem}
+
+  .hero-right{grid-template-columns:1fr;grid-template-rows:auto}
+  .prod-card:first-child,.prod-card:nth-child(2),.prod-card:nth-child(3){
+    grid-column:1;grid-row:auto
+  }
+
+  .about,.services,.testimonials,.contact{padding:60px 24px}
+  .about-inner{padding:30px 20px}
+
+  .services-grid,.testimonials-grid{grid-template-columns:1fr}
+
+  .contact-form-wrap{padding:24px}
+  footer{padding:30px 24px 20px}
+  .footer-inner{flex-direction:column;text-align:center}
+}
+
+@media(max-width:480px){
+  header{padding:8px 12px}
+  .logo-text{font-size:0.75rem;letter-spacing:1px}
+  .nav-links{display:none}
+  .toggle-btn{font-size:0.4rem;padding:3px 6px}
+
+  .marquee-wrap{top:44px;height:24px}
+  .marquee-item{font-size:0.45rem;letter-spacing:0;gap:8px}
+
+  .hero{padding:95px 14px 24px}
+  .hero-left h1{font-size:clamp(1.2rem,8vw,1.6rem)}
+  .hero-left .subtitle{letter-spacing:2px}
+  .cta-btn{padding:10px 16px;font-size:0.6rem;letter-spacing:1px}
+  .contact-form-wrap{padding:16px}
+  .form-row input,.form-row textarea{padding:10px 12px;font-size:0.7rem}
+}
+</style>
+</head>
+<body>
+
+<div class="crt-overlay"></div>
+<div class="grid-bg"></div>
+
+<div class="content-wrapper">
+
+<!-- HEADER -->
+<header>
+  <span class="logo-text">ARCADE HUD</span>
+  <ul class="nav-links">
+    <li><a href="#hero">Inicio</a></li>
+    <li><a href="#about">Nosotros</a></li>
+    <li><a href="#services">Servicios</a></li>
+    <li><a href="#testimonials">Reseñas</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+  <button class="toggle-btn" id="modeToggle" aria-label="Toggle mode">
+    <span class="icon-moon">[NOC]</span>
+    <span class="icon-sun">[DIA]</span>
+  </button>
+</header>
+
+<!-- MARQUEE TICKER -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">&#9733; Nuevo gabinete PAC-MAN disponible <span class="sep">&#10095;</span></span>
+    <span class="marquee-item">&#9733; Edición Limitada Street Fighter II Pro <span class="sep">&#10095;</span></span>
+    <span class="marquee-item">&#9733; Consolas retro re-stock esta semana <span class="sep">&#10095;</span></span>
+    <span class="marquee-item">&#9733; 20% OFF en coleccionables selectos <span class="sep">&#10095;</span></span>
+    <span class="marquee-item">&#9733; Torneo arcade online — registrate ya <span class="sep">&#10095;</span></span>
+    <span class="marquee-item">&#9733; Nuevo gabinete PAC-MAN disponible <span class="sep">&#10095;</span></span>
+    <span class="marquee-item">&#9733; Edición Limitada Street Fighter II Pro <span class="sep">&#10095;</span></span>
+    <span class="marquee-item">&#9733; Consolas retro re-stock esta semana <span class="sep">&#10095;</span></span>
+    <span class="marquee-item">&#9733; 20% OFF en coleccionables selectos <span class="sep">&#10095;</span></span>
+    <span class="marquee-item">&#9733; Torneo arcade online — registrate ya <span class="sep">&#10095;</span></span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-left">
+    <h1 class="glitch-title" data-text="Consolas Retro &amp; Arcade">Consolas Retro &amp; Arcade</h1>
+    <p class="subtitle">La leyenda vive en cada píxel</p>
+    <p class="desc">Reviví la era dorada de los videojuegos. Gabinetes arcade restaurados, consolas clásicas y coleccionables únicos que honran el legado del gaming. Cada pieza es seleccionada por su autenticidad y valor histórico.</p>
+    <a href="#contact" class="cta-btn">&#9655; Comprar Ahora</a>
+  </div>
+  <div class="hero-right">
+    <div class="grid-layer"></div>
+    <div class="prod-card">
+      <span class="badge">NUEVA</span>
+      <h3>Arcade Cabinet Pro</h3>
+      <p>Gabiente restaurado con pantalla CRT y 3000 juegos clásicos integrados. Modo 2P.</p>
+      <span class="price">$1,299 USD</span>
+    </div>
+    <div class="prod-card">
+      <span class="badge">LIMITADA</span>
+      <h3>Neo Controller X</h3>
+      <p>Control arcade edición coleccionista con switches mecánicos y acabado retro.</p>
+      <span class="price">$89 USD</span>
+    </div>
+    <div class="prod-card">
+      <span class="badge">EXCLUSIVO</span>
+      <h3>Pixel Collector #01</h3>
+      <p>Figura articulada de edición limitada inspirada en los clásicos de los 80s.</p>
+      <span class="price">$149 USD</span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-inner">
+    <p class="coin-label">INSERT COIN TO START</p>
+    <h2>Sobre Nosotros</h2>
+    <p>Nacimos en un garage con una misión: rescatar la magia de los salones arcade. Desde 2018 recorremos ferias, mercados y subastas para encontrar tesoros del gaming clásico. Cada gabinete que restaurarmos cuenta una historia, cada consola revive una generaci&oacute;n. Somos jugadores, coleccionistas y soñadores. Bienvenido a casa.</p>
+    <div class="load-track">
+      <div class="load-fill"></div>
+    </div>
+    <div class="load-status">CARGANDO SISTEMA ARCADE</div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <p class="section-label">// SERVICIOS</p>
+  <h2>Características Principales</h2>
+  <div class="services-grid">
+    <div class="service-card">
+      <span class="icon">&#9881;</span>
+      <h3>Restauración de Gabinetes</h3>
+      <p>Recuperamos tu arcade al estado original con componentes modernos. CRT, joysticks, botones y arte de marquesina. Garantía de 12 meses en todo el trabajo.</p>
+    </div>
+    <div class="service-card">
+      <span class="icon">&#9992;</span>
+      <h3>Envíos Internacionales</h3>
+      <p>Llevamos la nostalgia a cualquier rincón del planeta. Embalaje profesional, seguros y tracking en tiempo real para que tu pedido llegue intacto.</p>
+    </div>
+    <div class="service-card">
+      <span class="icon">&#9733;</span>
+      <h3>Soporte Arcade</h3>
+      <p>Asistencia técnica especializada para coleccionistas. Diagnóstico remoto, piezas originales y asesoría para mantener tu colección en perfecto estado.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <p class="section-label">// RESEÑAS</p>
+  <h2>Lo Que Dicen Nuestros Clientes</h2>
+  <div class="testimonials-grid">
+    <div class="testimonial-box">
+      <p class="quote">Compré un gabinete de Street Fighter II restaurado. Llegó impecable, con los gráficos originales y los controles responden como en 1991. Volveré a comprar sin dudas.</p>
+      <p class="speaker">MaxPower85</p>
+    </div>
+    <div class="testimonial-box">
+      <p class="quote">El envío a España fue rapidísimo. La Neo Controller X es una obra de arte. Se nota que aman lo que hacen. La atención al cliente es de primer nivel.</p>
+      <p class="speaker">RetroLady</p>
+    </div>
+    <div class="testimonial-box">
+      <p class="quote">Contacté para restaurar mi antiguo arcade de los 80 y el resultado fue alucinante. Respetaron cada detalle original. Ahora tengo una pieza de museo en mi sala.</p>
+      <p class="speaker">PixelWarrior</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <p class="section-label">// CONTACTO</p>
+  <h2>Registrá tu Puntaje</h2>
+  <p class="hs-label">ENTER YOUR NAME &mdash; HIGH SCORE BOARD</p>
+  <div class="contact-form-wrap">
+    <form id="contactForm">
+      <div class="form-row">
+        <label for="name">Nombre</label>
+        <input type="text" id="name" name="name" placeholder="INGRESÁ TU NOMBRE" required>
+      </div>
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="INGRESÁ TU EMAIL" required>
+      </div>
+      <div class="form-row">
+        <label for="message">Mensaje</label>
+        <textarea id="message" name="message" placeholder="ESCRIBÍ TU MENSAJE..." required></textarea>
+      </div>
+      <button type="submit" class="form-submit">&#9655; Enviar Puntaje</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="social-links">
+      <a href="#" class="social-link" aria-label="X">X</a>
+      <a href="#" class="social-link" aria-label="Instagram">IG</a>
+      <a href="#" class="social-link" aria-label="YouTube">YT</a>
+      <a href="#" class="social-link" aria-label="Discord">DC</a>
+    </div>
+    <p class="copyright">&copy; 2026 ARCADE HUD &mdash; Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var tb=document.getElementById('modeToggle');
+  if(tb){
+    var s=localStorage.getItem('arcadeHudMode');
+    if(s==='light')document.body.classList.add('light-mode');
+    tb.addEventListener('click',function(){
+      document.body.classList.toggle('light-mode');
+      localStorage.setItem('arcadeHudMode',document.body.classList.contains('light-mode')?'light':'dark');
+    });
+  }
+  var f=document.getElementById('contactForm');
+  if(f){
+    f.addEventListener('submit',function(e){
+      e.preventDefault();
+      var btn=f.querySelector('.form-submit');
+      var orig=btn.textContent;
+      btn.textContent='&#9655; PUNTAJE ENVIADO';
+      btn.style.borderColor='#00FF41';
+      btn.style.color='#00FF41';
+      btn.style.boxShadow='0 0 20px #00FF41';
+      setTimeout(function(){
+        btn.textContent=orig;
+        btn.style.borderColor='';
+        btn.style.color='';
+        btn.style.boxShadow='';
+        f.reset();
+      },3000);
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

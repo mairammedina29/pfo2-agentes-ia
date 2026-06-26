@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARCADE HUD — Tienda Retro Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+
+/* ══════════════════════════════════════════════════════════════
+   VARIABLES — MODO NOCHE (DEFAULT)
+══════════════════════════════════════════════════════════════ */
+:root {
+  --bg-gradient: linear-gradient(135deg, #03001e 0%, #7303c0 50%, #ec38bc 100%);
+  --text-title-color: #00F2FE;
+  --text-subtitle-color: #FFF200;
+  --text-desc-color: #E2E8F0;
+  --grid-color: rgba(0, 242, 254, 0.15);
+  --grid-glow: 0 0 12px rgba(0, 242, 254, 0.75);
+  --color-tomato: #FF0055;
+  --card-bg: rgba(0, 0, 0, 0.5);
+  --card-border: var(--text-title-color);
+  --nav-bg: rgba(3, 0, 30, 0.78);
+  --input-bg: rgba(0, 0, 0, 0.65);
+  --input-border: rgba(0, 242, 254, 0.45);
+  --footer-bg: rgba(0, 0, 0, 0.75);
+  --shadow-neon: 0 0 22px rgba(0, 242, 254, 0.5);
+  --shadow-tomato: 0 0 22px rgba(255, 0, 85, 0.55);
+  --glitch-color-1: #FF0055;
+  --glitch-color-2: #00F2FE;
+  --t: 0.4s;
+  --ticker-bg: rgba(0, 0, 0, 0.7);
+  --ticker-border: rgba(0, 242, 254, 0.35);
+  --hud-corner: #FF0055;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   VARIABLES — MODO DÍA
+══════════════════════════════════════════════════════════════ */
+body.light-mode {
+  --bg-gradient: linear-gradient(135deg, #eef2f7 0%, #d9e2ec 100%);
+  --text-title-color: #0F172A;
+  --text-subtitle-color: #FF5500;
+  --text-desc-color: #334155;
+  --grid-color: rgba(255, 85, 0, 0.2);
+  --grid-glow: 0 0 10px rgba(255, 85, 0, 0.6);
+  --color-tomato: #FF5500;
+  --card-bg: rgba(255, 255, 255, 0.72);
+  --card-border: #0F172A;
+  --nav-bg: rgba(238, 242, 247, 0.88);
+  --input-bg: rgba(255, 255, 255, 0.85);
+  --input-border: rgba(255, 85, 0, 0.45);
+  --footer-bg: rgba(217, 226, 236, 0.97);
+  --shadow-neon: 0 0 22px rgba(255, 85, 0, 0.35);
+  --shadow-tomato: 0 0 22px rgba(255, 85, 0, 0.5);
+  --glitch-color-1: #FF5500;
+  --glitch-color-2: #0F172A;
+  --ticker-bg: rgba(238, 242, 247, 0.88);
+  --ticker-border: rgba(255, 85, 0, 0.35);
+  --hud-corner: #FF5500;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESET
+══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background: var(--bg-gradient);
+  color: var(--text-desc-color);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background var(--t), color var(--t);
+  position: relative;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EFECTO CRT / SCANLINES — capa fija sobre toda la pantalla
+══════════════════════════════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.055) 2px,
+    rgba(0, 0, 0, 0.055) 4px
+  );
+  animation: crt-scroll 9s linear infinite;
+  will-change: background-position;
+}
+
+body.light-mode::before {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.022) 2px,
+    rgba(0, 0, 0, 0.022) 4px
+  );
+}
+
+@keyframes crt-scroll {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
+}
+
+/* Viñeta CRT sutil */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.45) 100%);
+}
+
+body.light-mode::after {
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.12) 100%);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE WRAPPER
+══════════════════════════════════════════════════════════════ */
+.page-wrapper { position: relative; z-index: 1; width: 100%; }
+
+/* ══════════════════════════════════════════════════════════════
+   CUADRÍCULA GLOBAL DE FONDO
+══════════════════════════════════════════════════════════════ */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 45px 45px;
+  filter: drop-shadow(var(--grid-glow));
+  transition: background-image var(--t), filter var(--t);
+  animation: grid-pulse 4s ease-in-out infinite;
+}
+
+@keyframes grid-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TICKER / MARQUESINA 8-BITS
+══════════════════════════════════════════════════════════════ */
+.ticker-wrap {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 200;
+  background: var(--ticker-bg);
+  border-top: 1px solid var(--ticker-border);
+  height: 34px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  transition: background var(--t), border-color var(--t);
+  backdrop-filter: blur(10px);
+}
+
+.ticker-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-subtitle-color);
+  padding: 0 1.1rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-right: 1px solid var(--ticker-border);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition: color var(--t), border-color var(--t);
+}
+
+.ticker-inner {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  flex: 1;
+  height: 100%;
+}
+
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker-scroll 32s linear infinite;
+  will-change: transform;
+}
+
+.ticker-track:hover { animation-play-state: paused; }
+
+.ticker-item {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-desc-color);
+  padding: 0 2.5rem;
+  transition: color var(--t);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ticker-item .t-dot {
+  color: var(--text-title-color);
+  font-size: 0.5rem;
+  transition: color var(--t);
+}
+
+.ticker-item strong {
+  color: var(--text-subtitle-color);
+  transition: color var(--t);
+}
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════════════════════ */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 2rem;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--nav-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+  transition: background var(--t), border-color var(--t);
+  gap: 1rem;
+}
+
+body.light-mode .site-header {
+  border-bottom-color: rgba(255, 85, 0, 0.2);
+}
+
+/* Logo con neón parpadeante */
+.logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-title-color);
+  text-decoration: none;
+  animation: logo-flicker 3.5s infinite;
+  transition: color var(--t);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@keyframes logo-flicker {
+  0%, 89%, 91%, 93%, 97%, 100% {
+    text-shadow: 0 0 6px var(--text-title-color), 0 0 18px var(--text-title-color), 0 0 40px var(--text-title-color);
+    opacity: 1;
+  }
+  90%, 92% { text-shadow: none; opacity: 0.65; }
+  94%, 96% { text-shadow: 0 0 4px var(--text-title-color); opacity: 0.85; }
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-desc-color);
+  text-decoration: none;
+  padding: 0.38rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  transition: color var(--t), border-color var(--t), background var(--t), box-shadow 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--text-title-color);
+  border-color: var(--text-title-color);
+  background: rgba(0, 242, 254, 0.06);
+  box-shadow: var(--shadow-neon);
+}
+
+/* Toggle día/noche */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggle-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.52rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-title-color);
+  transition: color var(--t);
+}
+
+.toggle-track {
+  position: relative;
+  width: 44px; height: 22px;
+  background: rgba(0, 242, 254, 0.12);
+  border: 1.5px solid var(--text-title-color);
+  border-radius: 11px;
+  transition: background var(--t), border-color var(--t);
+  cursor: pointer;
+}
+
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: var(--text-title-color);
+  border-radius: 50%;
+  transition: transform var(--t), background var(--t);
+  box-shadow: 0 0 8px var(--text-title-color);
+}
+
+body.light-mode .toggle-track::after { transform: translateX(22px); }
+
+/* ══════════════════════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  padding-top: 66px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  padding-bottom: 5rem;
+  position: relative;
+}
+
+/* Columna izquierda */
+.hero-text { min-width: 0; position: relative; z-index: 1; }
+
+.hero-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-subtitle-color);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  margin-bottom: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: color var(--t);
+  animation: typing-blink 1s step-end infinite;
+}
+
+@keyframes typing-blink {
+  0%, 100% { border-right-color: var(--text-subtitle-color); }
+  50%       { border-right-color: transparent; }
+}
+
+/* ══ GLITCH TITLE ══ */
+.hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.1rem, 5vw, 3.8rem);
+  text-transform: uppercase;
+  color: var(--text-title-color);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  margin-bottom: 1.25rem;
+  position: relative;
+  display: inline-block;
+  animation: glitch-main 5s infinite;
+  transition: color var(--t);
+}
+
+.hero-title::before,
+.hero-title::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-transform: uppercase;
+}
+
+.hero-title::before {
+  color: var(--glitch-color-1);
+  animation: glitch-layer-1 5s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+}
+
+.hero-title::after {
+  color: var(--glitch-color-2);
+  animation: glitch-layer-2 5s infinite;
+  clip-path: polygon(0 55%, 100% 55%, 100% 75%, 0 75%);
+}
+
+@keyframes glitch-main {
+  0%, 92%, 100%  { transform: none; }
+  93%            { transform: skewX(-2deg) translateX(3px); }
+  94%            { transform: skewX(1deg) translateX(-2px); }
+  95%            { transform: none; }
+  97%            { transform: skewX(-1deg); }
+}
+
+@keyframes glitch-layer-1 {
+  0%, 91%, 100%  { transform: none; opacity: 0; }
+  92%            { transform: translateX(-4px); opacity: 0.85; }
+  93%            { transform: translateX(4px); opacity: 0.85; }
+  94%            { transform: none; opacity: 0; }
+  97%            { transform: translateX(-2px); opacity: 0.6; }
+  98%            { opacity: 0; transform: none; }
+}
+
+@keyframes glitch-layer-2 {
+  0%, 91%, 100%  { transform: none; opacity: 0; }
+  92%            { transform: translateX(4px); opacity: 0.8; }
+  93%            { transform: translateX(-3px); opacity: 0.7; }
+  94%            { transform: none; opacity: 0; }
+  97%            { transform: translateX(2px); opacity: 0.5; }
+  98%            { opacity: 0; transform: none; }
+}
+
+.hero-subtitle {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.9rem, 2vw, 1.25rem);
+  text-transform: uppercase;
+  color: var(--text-subtitle-color);
+  margin-bottom: 1.4rem;
+  letter-spacing: 0.07em;
+  transition: color var(--t);
+}
+
+.hero-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-desc-color);
+  line-height: 1.8;
+  max-width: 460px;
+  margin-bottom: 2.5rem;
+  transition: color var(--t);
+}
+
+.hero-desc mark {
+  background: transparent;
+  color: var(--text-subtitle-color);
+  transition: color var(--t);
+}
+
+/* CTA button */
+.btn-cta {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #fff;
+  background: var(--color-tomato);
+  border: 2px solid var(--color-tomato);
+  padding: 0.95rem 2.4rem;
+  cursor: pointer;
+  border-radius: 3px;
+  text-decoration: none;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  transition: background var(--t), color var(--t), box-shadow var(--t), transform 0.08s;
+}
+
+.btn-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.1);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.38s ease;
+}
+
+.btn-cta:hover::after { transform: scaleX(1); }
+
+.btn-cta:hover {
+  background: transparent;
+  color: var(--color-tomato);
+  box-shadow: 0 0 35px var(--color-tomato), 0 0 65px rgba(255,0,85,0.3);
+}
+
+.btn-cta:active {
+  transform: translateY(3px) scale(0.98);
+  box-shadow: 0 0 10px var(--color-tomato);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HERO CARDS COLUMN — cuadrícula + máscara
+══════════════════════════════════════════════════════════════ */
+.hero-cards-col {
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Capa de fondo con cuadrícula + fade mask */
+.hero-cards-col::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 45px 45px;
+  filter: drop-shadow(var(--grid-glow));
+  -webkit-mask-image: radial-gradient(circle at top left, black 30%, transparent 80%);
+  mask-image: radial-gradient(circle at top left, black 30%, transparent 80%);
+  pointer-events: none;
+  transition: background-image var(--t), filter var(--t);
+}
+
+.hero-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.15rem;
+  position: relative;
+}
+
+/* ══ 3D CARD HOVER ══ */
+.product-card {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 6px;
+  padding: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition:
+    background var(--t),
+    border-color var(--t),
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Línea superior decorativa */
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--text-title-color);
+  transition: background var(--t);
+}
+
+/* Schimmer sweep en hover */
+.product-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+
+.product-card:hover::after { opacity: 1; }
+
+/* 3D tilt — implementado con JS abajo, pero fallback en CSS */
+.product-card:hover {
+  transform: perspective(900px) rotateX(-4deg) rotateY(5deg) translateY(-8px) scale(1.02);
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.45),
+    0 0 28px rgba(0, 242, 254, 0.55),
+    0 0 60px rgba(0, 242, 254, 0.2);
+}
+
+body.light-mode .product-card:hover {
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.18),
+    0 0 28px rgba(255, 85, 0, 0.45),
+    0 0 60px rgba(255, 85, 0, 0.15);
+}
+
+.product-card:nth-child(1) { grid-column: 1 / 3; }
+
+.card-tag {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.52rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-subtitle-color);
+  border: 1px solid var(--text-subtitle-color);
+  padding: 0.18rem 0.5rem;
+  display: inline-block;
+  width: fit-content;
+  margin-bottom: 0.2rem;
+  transition: color var(--t), border-color var(--t);
+}
+
+.card-emoji { font-size: 2.3rem; line-height: 1; margin-bottom: 0.3rem; }
+.product-card:nth-child(1) .card-emoji { font-size: 3rem; }
+
+.card-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: var(--text-title-color);
+  letter-spacing: 0.05em;
+  transition: color var(--t);
+}
+
+.card-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-desc-color);
+  line-height: 1.5;
+  transition: color var(--t);
+}
+
+.card-price {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: var(--color-tomato);
+  margin-top: auto;
+  padding-top: 0.5rem;
+  transition: color var(--t);
+}
+
+.card-btn {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.57rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-title-color);
+  background: transparent;
+  border: 1.5px solid var(--text-title-color);
+  padding: 0.42rem 0.8rem;
+  cursor: pointer;
+  border-radius: 3px;
+  width: fit-content;
+  transition: background var(--t), color var(--t), box-shadow 0.3s, border-color var(--t);
+}
+
+.card-btn:hover {
+  background: var(--color-tomato);
+  border-color: var(--color-tomato);
+  color: #fff;
+  box-shadow: 0 0 16px var(--color-tomato);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ABOUT — INSERT COIN
+══════════════════════════════════════════════════════════════ */
+.about {
+  position: relative;
+  z-index: 1;
+  padding: 6rem 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
+  border-top: 1px solid rgba(0, 242, 254, 0.18);
+  transition: border-color var(--t);
+}
+
+body.light-mode .about { border-top-color: rgba(255,85,0,0.18); }
+
+.coin-screen {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 8px;
+  padding: 3rem 3.5rem;
+  max-width: 700px;
+  width: 100%;
+  backdrop-filter: blur(12px);
+  position: relative;
+  transition: background var(--t), border-color var(--t);
+}
+
+.coin-screen::before {
+  content: '● ● ●';
+  position: absolute;
+  top: 0.75rem; left: 1rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.4em;
+  color: var(--text-title-color);
+  opacity: 0.5;
+  transition: color var(--t);
+}
+
+/* INSERT COIN con flicker irregular */
+.insert-coin {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.4rem, 3.5vw, 2.1rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--text-subtitle-color);
+  letter-spacing: 0.16em;
+  animation: coin-flicker 2.2s infinite;
+  margin-bottom: 1.5rem;
+  display: block;
+  transition: color var(--t);
+}
+
+@keyframes coin-flicker {
+  0%,  8%,  10%, 20%, 22%, 60%, 62%, 80%, 82%, 100% { opacity: 1; }
+  9%,  21%, 61%, 81%                                 { opacity: 0; }
+}
+
+/* Barra de carga retro */
+.loading-bar-wrap {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.loading-bar-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text-desc-color);
+  text-align: left;
+  transition: color var(--t);
+}
+
+.loading-bar-track {
+  height: 10px;
+  background: rgba(0,0,0,0.4);
+  border: 1.5px solid var(--card-border);
+  border-radius: 2px;
+  overflow: hidden;
+  transition: border-color var(--t);
+}
+
+.loading-bar-fill {
+  height: 100%;
+  background: var(--text-title-color);
+  width: 0%;
+  animation: load-bar 3.5s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--text-title-color);
+  transition: background var(--t), box-shadow var(--t);
+}
+
+@keyframes load-bar {
+  0%   { width: 0%; opacity: 1; }
+  70%  { width: 100%; opacity: 1; }
+  85%  { width: 100%; opacity: 0; }
+  86%  { width: 0%; opacity: 0; }
+  100% { width: 0%; opacity: 1; }
+}
+
+.about-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  text-transform: uppercase;
+  color: var(--text-title-color);
+  margin-bottom: 0.85rem;
+  transition: color var(--t);
+}
+
+.about-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.88rem;
+  color: var(--text-desc-color);
+  line-height: 1.85;
+  transition: color var(--t);
+}
+
+.about-text strong { color: var(--text-title-color); transition: color var(--t); }
+
+.divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.2rem 0;
+}
+
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: var(--card-border); opacity: 0.3;
+}
+
+.divider-icon { color: var(--text-subtitle-color); font-size: 0.9rem; transition: color var(--t); }
+
+/* ══════════════════════════════════════════════════════════════
+   SERVICIOS — HUD GRID
+══════════════════════════════════════════════════════════════ */
+.services {
+  position: relative;
+  z-index: 1;
+  padding: 6rem 4rem;
+  border-top: 1px solid rgba(0, 242, 254, 0.18);
+  transition: border-color var(--t);
+}
+
+body.light-mode .services { border-top-color: rgba(255,85,0,0.18); }
+
+.section-header { text-align: center; margin-bottom: 3.5rem; }
+
+.section-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-subtitle-color);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.7rem;
+  transition: color var(--t);
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.35rem, 3vw, 2.1rem);
+  text-transform: uppercase;
+  color: var(--text-title-color);
+  letter-spacing: 0.07em;
+  transition: color var(--t);
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.4rem;
+}
+
+/* HUD block con bordes animados en hover */
+.hud-block {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 6px;
+  padding: 1.85rem 1.4rem;
+  position: relative;
+  backdrop-filter: blur(8px);
+  transition: background var(--t), border-color var(--t), transform 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Bordes animados tipo "scan" en hover */
+.hud-block::before {
+  content: '';
+  position: absolute;
+  top: -100%; left: 0; right: 0;
+  height: 2px;
+  background: var(--text-title-color);
+  box-shadow: 0 0 12px var(--text-title-color);
+  transition: top 0.0s;
+  opacity: 0;
+}
+
+.hud-block:hover::before {
+  opacity: 1;
+  top: 0;
+  animation: hud-scan 1.6s linear infinite;
+}
+
+@keyframes hud-scan {
+  0%   { top: -2px; }
+  100% { top: 100%; }
+}
+
+.hud-block:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-neon);
+}
+
+/* Esquinas estilo HUD */
+.hud-corner { position: absolute; width: 11px; height: 11px; border-color: var(--hud-corner); border-style: solid; transition: border-color var(--t); }
+.hud-corner.tl { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+.hud-corner.tr { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+.hud-corner.bl { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+.hud-corner.br { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+.hud-icon { font-size: 2.4rem; margin-bottom: 1rem; display: block; }
+.hud-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  color: var(--text-title-color);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.7rem;
+  transition: color var(--t);
+}
+
+.hud-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-desc-color);
+  line-height: 1.65;
+  transition: color var(--t);
+}
+
+.hud-status {
+  margin-top: 1.1rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-subtitle-color);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color var(--t);
+}
+
+.hud-status::before {
+  content: '●';
+  font-size: 0.55rem;
+  animation: pulse-dot 1.6s ease infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TESTIMONIOS — RPG DIALOG
+══════════════════════════════════════════════════════════════ */
+.testimonials {
+  position: relative;
+  z-index: 1;
+  padding: 6rem 4rem;
+  border-top: 1px solid rgba(0, 242, 254, 0.18);
+  transition: border-color var(--t);
+}
+
+body.light-mode .testimonials { border-top-color: rgba(255,85,0,0.18); }
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 1.7rem;
+}
+
+.rpg-dialog {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 4px;
+  padding: 1.65rem;
+  position: relative;
+  backdrop-filter: blur(10px);
+  transition: background var(--t), border-color var(--t), box-shadow 0.3s;
+  min-width: 0;
+}
+
+.rpg-dialog:hover { box-shadow: var(--shadow-neon); }
+
+/* Triángulo RPG */
+.rpg-dialog::after {
+  content: '';
+  position: absolute;
+  bottom: -13px; left: 2rem;
+  width: 0; height: 0;
+  border-left: 11px solid transparent;
+  border-top: 13px solid var(--card-border);
+  transition: border-top-color var(--t);
+}
+
+.rpg-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+  transition: border-color var(--t);
+}
+
+body.light-mode .rpg-header { border-bottom-color: rgba(15,23,42,0.15); }
+
+.rpg-avatar {
+  width: 38px; height: 38px;
+  background: var(--text-title-color);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  transition: background var(--t);
+}
+
+.rpg-name {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: var(--text-title-color);
+  display: block;
+  transition: color var(--t);
+}
+
+.rpg-level {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.63rem;
+  color: var(--text-subtitle-color);
+  transition: color var(--t);
+}
+
+/* Texto RPG con animación "typing" de entrada */
+.rpg-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-desc-color);
+  line-height: 1.7;
+  animation: rpg-text-in 0.8s ease both;
+  transition: color var(--t);
+}
+
+@keyframes rpg-text-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rpg-stars {
+  margin-top: 0.9rem;
+  color: var(--text-subtitle-color);
+  font-size: 0.88rem;
+  letter-spacing: 0.12em;
+  transition: color var(--t);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONTACTO — HIGH SCORE FORM
+══════════════════════════════════════════════════════════════ */
+.contact {
+  position: relative;
+  z-index: 1;
+  padding: 6rem 4rem;
+  border-top: 1px solid rgba(0, 242, 254, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: border-color var(--t);
+}
+
+body.light-mode .contact { border-top-color: rgba(255,85,0,0.18); }
+
+.hiscore-panel {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 8px;
+  padding: 3rem;
+  max-width: 640px;
+  width: 100%;
+  backdrop-filter: blur(12px);
+  position: relative;
+  transition: background var(--t), border-color var(--t);
+}
+
+.hiscore-panel::before {
+  content: 'HIGH SCORE BOARD';
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.52rem;
+  letter-spacing: 0.28em;
+  color: var(--text-subtitle-color);
+  position: absolute;
+  top: -0.65rem; left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  padding: 0 1rem;
+  white-space: nowrap;
+  transition: color var(--t), background var(--t);
+}
+
+.hiscore-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  text-transform: uppercase;
+  color: var(--text-subtitle-color);
+  text-align: center;
+  letter-spacing: 0.14em;
+  margin-bottom: 0.4rem;
+  animation: coin-flicker 3s infinite;
+  transition: color var(--t);
+}
+
+.hiscore-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.76rem;
+  color: var(--text-desc-color);
+  text-align: center;
+  margin-bottom: 2.4rem;
+  transition: color var(--t);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 0.38rem; min-width: 0; }
+.form-group.full { grid-column: 1 / -1; }
+
+.form-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.56rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-title-color);
+  transition: color var(--t);
+}
+
+.form-input, .form-textarea {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.84rem;
+  color: var(--text-desc-color);
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: 3px;
+  padding: 0.72rem 0.95rem;
+  width: 100%;
+  outline: none;
+  caret-color: var(--text-title-color);
+  transition: background var(--t), border-color var(--t), color var(--t), box-shadow 0.3s;
+}
+
+.form-input:focus, .form-textarea:focus {
+  border-color: var(--text-title-color);
+  box-shadow: 0 0 14px rgba(0, 242, 254, 0.28);
+  animation: input-pulse 1.4s ease-in-out infinite;
+}
+
+body.light-mode .form-input:focus,
+body.light-mode .form-textarea:focus {
+  box-shadow: 0 0 14px rgba(255,85,0,0.22);
+  animation: none;
+}
+
+@keyframes input-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 242, 254, 0.28); }
+  50%       { box-shadow: 0 0 20px rgba(0, 242, 254, 0.55); }
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+  color: rgba(226,232,240,0.28);
+}
+
+body.light-mode .form-input::placeholder,
+body.light-mode .form-textarea::placeholder {
+  color: rgba(51,65,85,0.35);
+}
+
+.form-textarea { resize: vertical; min-height: 115px; }
+
+.form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text-desc-color);
+  transition: color var(--t);
+}
+
+.form-status span { color: var(--text-title-color); transition: color var(--t); }
+
+.btn-submit {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #03001e;
+  background: var(--text-title-color);
+  border: 2px solid var(--text-title-color);
+  padding: 0.82rem 1.9rem;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background var(--t), color var(--t), box-shadow 0.3s, transform 0.08s;
+}
+
+body.light-mode .btn-submit { color: #fff; }
+
+.btn-submit:hover {
+  background: transparent;
+  color: var(--text-title-color);
+  box-shadow: var(--shadow-neon);
+}
+
+.btn-submit:active { transform: translateY(2px); }
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════════════════ */
+.site-footer {
+  position: relative;
+  z-index: 1;
+  background: var(--footer-bg);
+  border-top: 1px solid rgba(0, 242, 254, 0.18);
+  padding: 3rem 4rem 2.5rem;
+  padding-bottom: calc(2.5rem + 34px); /* ticker height */
+  transition: background var(--t), border-color var(--t);
+  backdrop-filter: blur(12px);
+}
+
+body.light-mode .site-footer { border-top-color: rgba(255,85,0,0.18); }
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.footer-logo {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.footer-tagline {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.77rem;
+  color: var(--text-desc-color);
+  line-height: 1.65;
+  margin-bottom: 1.2rem;
+  transition: color var(--t);
+}
+
+.social-links { display: flex; gap: 0.65rem; }
+
+.social-link {
+  width: 35px; height: 35px;
+  border: 1.5px solid var(--text-title-color);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--text-title-color);
+  transition: background var(--t), color var(--t), border-color var(--t), box-shadow 0.3s;
+  animation: social-idle 3s ease-in-out infinite;
+}
+
+.social-link:nth-child(2) { animation-delay: 0.4s; }
+.social-link:nth-child(3) { animation-delay: 0.8s; }
+.social-link:nth-child(4) { animation-delay: 1.2s; }
+.social-link:nth-child(5) { animation-delay: 1.6s; }
+
+@keyframes social-idle {
+  0%, 90%, 100% { border-color: var(--text-title-color); box-shadow: none; }
+  93%           { border-color: var(--text-subtitle-color); box-shadow: 0 0 10px var(--text-subtitle-color); }
+}
+
+.social-link:hover {
+  background: var(--text-title-color);
+  color: #03001e;
+  box-shadow: var(--shadow-neon);
+  animation: none;
+}
+
+body.light-mode .social-link:hover { color: #fff; }
+
+.footer-col-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-title-color);
+  margin-bottom: 1rem;
+  transition: color var(--t);
+}
+
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.48rem; }
+
+.footer-links a {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.77rem;
+  color: var(--text-desc-color);
+  text-decoration: none;
+  transition: color var(--t);
+  display: flex;
+  align-items: center;
+  gap: 0.38rem;
+}
+
+.footer-links a::before { content: '›'; color: var(--text-subtitle-color); transition: color var(--t); }
+.footer-links a:hover { color: var(--text-title-color); }
+
+.footer-bottom {
+  border-top: 1px solid rgba(0, 242, 254, 0.15);
+  padding-top: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  transition: border-color var(--t);
+}
+
+body.light-mode .footer-bottom { border-top-color: rgba(255,85,0,0.15); }
+
+.footer-copy {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text-desc-color);
+  transition: color var(--t);
+}
+
+.footer-copy span { color: var(--text-title-color); transition: color var(--t); }
+
+/* ══════════════════════════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVIDAD
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1.5rem 4rem;
+    padding-top: calc(66px + 1.5rem);
+  }
+  .hero-cards { grid-template-columns: 1fr; }
+  .product-card:nth-child(1) { grid-column: 1; }
+  .nav-links { display: none; }
+  .about, .services, .testimonials, .contact { padding: 4rem 1.5rem; }
+  .coin-screen { padding: 2rem 1.5rem; }
+  .form-row { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .site-footer { padding: 2rem 1.5rem; padding-bottom: calc(1.5rem + 34px); }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .hiscore-panel { padding: 2rem 1.5rem; }
+  .site-header { padding: 0 1.25rem; }
+}
+
+@media (max-width: 480px) {
+  .logo { font-size: 1rem; }
+  .toggle-label { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+<!-- CUADRÍCULA DE FONDO FIJA -->
+<div class="grid-bg" aria-hidden="true"></div>
+
+<div class="page-wrapper">
+
+  <!-- ════════════════════ HEADER ════════════════════ -->
+  <header class="site-header" role="banner">
+    <a href="#inicio" class="logo" aria-label="Arcade HUD inicio">ARCADE HUD</a>
+
+    <nav aria-label="Navegación principal">
+      <ul class="nav-links">
+        <li><a href="#tienda">TIENDA</a></li>
+        <li><a href="#nosotros">NOSOTROS</a></li>
+        <li><a href="#servicios">SERVICIOS</a></li>
+        <li><a href="#resenas">RESEÑAS</a></li>
+        <li><a href="#contacto">CONTACTO</a></li>
+      </ul>
+    </nav>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Alternar modo día/noche">
+      <span aria-hidden="true" style="font-size:0.9rem">🌙</span>
+      <div class="toggle-track" role="switch" aria-checked="false"></div>
+      <span aria-hidden="true" style="font-size:0.9rem">☀️</span>
+      <span class="toggle-label" id="toggleLabel">NOCHE</span>
+    </button>
+  </header>
+
+  <!-- ════════════════════ HERO ════════════════════ -->
+  <section class="hero" id="inicio" aria-label="Sección principal">
+
+    <!-- Col izquierda -->
+    <div class="hero-text">
+      <p class="hero-eyebrow">&gt; // PLAYER ONE READY_</p>
+      <h1
+        class="hero-title"
+        data-text="REVIVE&#10;LA ERA&#10;DORADA"
+        aria-label="Revive la era dorada"
+      >REVIVE<br>LA ERA<br>DORADA</h1>
+      <p class="hero-subtitle">CONSOLAS · ARCADE · COLECCIONABLES</p>
+      <p class="hero-desc">
+        Bienvenido a <mark>ARCADE HUD</mark>, el HQ definitivo para los que
+        viven el pixel. Gabinetes restaurados, consolas retro, cartuchos
+        originales y coleccionables únicos. Todo en un solo lugar.<br><br>
+        &gt; STOCK ACTUALIZADO CADA SEMANA_
+      </p>
+      <a href="#tienda" class="btn-cta" aria-label="Explorar tienda">[ EXPLORAR TIENDA ]</a>
+    </div>
+
+    <!-- Col derecha — cards con cuadrícula + máscara -->
+    <div class="hero-cards-col" id="tienda">
+      <div class="hero-cards">
+
+        <!-- Card 1 — grande -->
+        <div class="product-card" data-tilt>
+          <div class="card-tag">⚡ DESTACADO</div>
+          <div class="card-emoji">🕹️</div>
+          <p class="card-title">GABINETE STREET FIGHTER II — RESTAURADO</p>
+          <p class="card-desc">Gabinete Capcom 1991. Restauración profesional, CRT recalibrado, joystick Sanwa. Certificado incluido.</p>
+          <p class="card-price">$4.299 USD</p>
+          <button class="card-btn">[ AÑADIR AL CARRITO ]</button>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="product-card" data-tilt>
+          <div class="card-tag">🎮 CONSOLA</div>
+          <div class="card-emoji">📺</div>
+          <p class="card-title">NEO GEO MVS — KIT COMPLETO</p>
+          <p class="card-desc">4 slots, 6 cartuchos SNK originales. Estado: excelente.</p>
+          <p class="card-price">$899 USD</p>
+          <button class="card-btn">[ COMPRAR ]</button>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="product-card" data-tilt>
+          <div class="card-tag">🏆 COLECCIONABLE</div>
+          <div class="card-emoji">👾</div>
+          <p class="card-title">SPACE INVADERS — FIGURA LIMITADA</p>
+          <p class="card-desc">Resina 1:1, edición de 200 unidades. Numerada y firmada.</p>
+          <p class="card-price">$189 USD</p>
+          <button class="card-btn">[ COMPRAR ]</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ ABOUT — INSERT COIN ════════════════════ -->
+  <section class="about" id="nosotros" aria-label="Sobre nosotros">
+    <div class="coin-screen reveal">
+      <span class="insert-coin" aria-label="Insert coin to start">INSERT COIN TO START</span>
+
+      <div class="loading-bar-wrap">
+        <span class="loading-bar-label">&gt; CARGANDO DATOS DEL SISTEMA...</span>
+        <div class="loading-bar-track" role="progressbar" aria-label="Carga">
+          <div class="loading-bar-fill"></div>
+        </div>
+      </div>
+
+      <h2 class="about-title">MISIÓN: PRESERVAR EL PIXEL</h2>
+      <div class="divider"><span class="divider-icon">◆</span></div>
+      <p class="about-text">
+        En <strong>ARCADE HUD</strong> creemos que los videojuegos son cultura.<br>
+        Desde 2012, nos dedicamos a <strong>restaurar, preservar y distribuir</strong>
+        hardware retro, gabinetes arcade y coleccionables para jugadores y
+        coleccionistas de toda Latinoamérica.<br><br>
+        Cada pieza pasa por un proceso de verificación técnica de 40 puntos.
+        No vendemos basura. Vendemos historia.<br><br>
+        <strong>&gt; 12 AÑOS EN EL MERCADO · +3500 CLIENTES · 47 PAÍSES</strong>
+      </p>
+      <div class="divider" style="margin-top:1.25rem"><span class="divider-icon">◆</span></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ SERVICIOS ════════════════════ -->
+  <section class="services" id="servicios" aria-label="Servicios">
+    <div class="section-header reveal">
+      <span class="section-tag">// SYS.SERVICES — ONLINE</span>
+      <h2 class="section-title">NUESTROS SERVICIOS</h2>
+    </div>
+
+    <div class="services-grid">
+
+      <div class="hud-block reveal">
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+        <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+        <span class="hud-icon">🔧</span>
+        <p class="hud-title">RESTAURACIÓN DE GABINETES</p>
+        <p class="hud-desc">Laminado, electrónica, pantalla, joysticks y marquesina. Devolvemos el pasado a la vida.</p>
+        <p class="hud-status">TURNOS DISPONIBLES</p>
+      </div>
+
+      <div class="hud-block reveal">
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+        <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+        <span class="hud-icon">📦</span>
+        <p class="hud-title">ENVÍOS INTERNACIONALES</p>
+        <p class="hud-desc">Embalaje especializado, seguro de carga y tracking en tiempo real a 47 países.</p>
+        <p class="hud-status">COBERTURA: GLOBAL</p>
+      </div>
+
+      <div class="hud-block reveal">
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+        <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+        <span class="hud-icon">🛡️</span>
+        <p class="hud-title">SOPORTE TÉCNICO ARCADE</p>
+        <p class="hud-desc">Diagnóstico remoto y presencial, reparación PCB, conversiones JAMMA, CRT y VGA.</p>
+        <p class="hud-status">SOPORTE: 24/7</p>
+      </div>
+
+      <div class="hud-block reveal">
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+        <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+        <span class="hud-icon">🏷️</span>
+        <p class="hud-title">TASACIÓN Y COMPRA</p>
+        <p class="hud-desc">Tasamos en 24hs y ofrecemos el mejor precio del mercado. Todo estado aceptado.</p>
+        <p class="hud-status">EVALUACIÓN GRATUITA</p>
+      </div>
+
+      <div class="hud-block reveal">
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+        <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+        <span class="hud-icon">🎯</span>
+        <p class="hud-title">CAZA DE PIEZAS RARAS</p>
+        <p class="hud-desc">Red de contactos en Japón, Europa y EE.UU. para rastrear lo que necesitás.</p>
+        <p class="hud-status">RED ACTIVA: JP · EU · USA</p>
+      </div>
+
+      <div class="hud-block reveal">
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+        <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+        <span class="hud-icon">🎮</span>
+        <p class="hud-title">ALQUILER PARA EVENTOS</p>
+        <p class="hud-desc">Gabinetes y consolas para eventos corporativos y festivales. Setup incluido.</p>
+        <p class="hud-status">DISPONIBILIDAD: CONSULTAR</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════ TESTIMONIOS ════════════════════ -->
+  <section class="testimonials" id="resenas" aria-label="Reseñas de clientes">
+    <div class="section-header reveal">
+      <span class="section-tag">// LOG.REVIEWS — 3 ENTRADAS</span>
+      <h2 class="section-title">JUGADORES HABLAN</h2>
+    </div>
+
+    <div class="testimonials-grid">
+
+      <div class="rpg-dialog reveal">
+        <div class="rpg-header">
+          <div class="rpg-avatar" aria-hidden="true">🦸</div>
+          <div>
+            <span class="rpg-name">MARCOS_V</span>
+            <span class="rpg-level">LVL 42 · Buenos Aires, AR</span>
+          </div>
+        </div>
+        <p class="rpg-text">
+          "Compré un gabinete de Mortal Kombat II y llegó en condiciones perfectas.
+          El embalaje era increíble. La restauración es impecable, parece salido
+          de fábrica en 1992. No puedo pedir más."
+        </p>
+        <p class="rpg-stars">★★★★★</p>
+      </div>
+
+      <div class="rpg-dialog reveal">
+        <div class="rpg-header">
+          <div class="rpg-avatar" aria-hidden="true">🧙</div>
+          <div>
+            <span class="rpg-name">LUCIA_RET</span>
+            <span class="rpg-level">LVL 31 · Santiago, CL</span>
+          </div>
+        </div>
+        <p class="rpg-text">
+          "Me ayudaron a conseguir un cartucho de Castlevania para Game Boy que
+          buscaba hace 8 años. En una semana lo tenía en mi puerta. No puedo
+          creer que exista este nivel de servicio."
+        </p>
+        <p class="rpg-stars">★★★★★</p>
+      </div>
+
+      <div class="rpg-dialog reveal">
+        <div class="rpg-header">
+          <div class="rpg-avatar" aria-hidden="true">🤖</div>
+          <div>
+            <span class="rpg-name">FEDE_ARK</span>
+            <span class="rpg-level">LVL 55 · Monterrey, MX</span>
+          </div>
+        </div>
+        <p class="rpg-text">
+          "Tres placas PCB quemadas que nadie quiso tocar. Las repararon todas.
+          El técnico explicó todo el proceso con lujo de detalle. Son los mejores
+          del sector, sin dudas."
+        </p>
+        <p class="rpg-stars">★★★★★</p>
+      </div>
+
+    </div>
+
+    <div style="display:flex;justify-content:center;margin-top:2.4rem">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-desc-color);border:1px solid rgba(0,242,254,0.25);padding:0.4rem 1rem;border-radius:3px;display:flex;align-items:center;gap:0.5rem;transition:color var(--t),border-color var(--t)">
+        &gt; PRESIONÁ A PARA VER MÁS
+        <span style="color:var(--text-subtitle-color);animation:coin-flicker 0.9s step-end infinite">_</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ CONTACTO ════════════════════ -->
+  <section class="contact" id="contacto" aria-label="Formulario de contacto">
+    <div class="section-header reveal" style="margin-bottom:2.5rem">
+      <span class="section-tag">// COM.LINK — CANAL ABIERTO</span>
+      <h2 class="section-title">ESTABLECÉ CONTACTO</h2>
+    </div>
+
+    <div class="hiscore-panel reveal">
+      <h3 class="hiscore-title">ENTER YOUR NAME</h3>
+      <p class="hiscore-sub">&gt; Completá el formulario para iniciar la comunicación con el HQ_</p>
+
+      <form onsubmit="handleSubmit(event)" novalidate aria-label="Formulario de contacto">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="fname">P1 — NOMBRE</label>
+            <input class="form-input" type="text" id="fname" name="nombre" placeholder="Tu nombre" autocomplete="name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="femail">P2 — EMAIL</label>
+            <input class="form-input" type="email" id="femail" name="email" placeholder="tu@email.com" autocomplete="email" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full">
+            <label class="form-label" for="fasunto">ASUNTO</label>
+            <input class="form-input" type="text" id="fasunto" name="asunto" placeholder="Consulta, cotización, reparación..." />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full">
+            <label class="form-label" for="fmsg">MENSAJE</label>
+            <textarea class="form-textarea" id="fmsg" name="mensaje" placeholder="&gt; Escribí tu mensaje aquí..." required></textarea>
+          </div>
+        </div>
+        <div class="form-footer">
+          <p class="form-status">STATUS: <span id="fstatus">ESPERANDO INPUT</span></p>
+          <button type="submit" class="btn-submit">[ ENVIAR MENSAJE ]</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ════════════════════ FOOTER ════════════════════ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-grid">
+
+      <div>
+        <a href="#inicio" class="logo footer-logo">ARCADE HUD</a>
+        <p class="footer-tagline">La tienda retro más completa de Latinoamérica.<br>Preservando la cultura del videojuego desde 2012.</p>
+        <div class="social-links" aria-label="Redes sociales">
+          <a href="#" class="social-link" aria-label="Instagram" title="Instagram">📸</a>
+          <a href="#" class="social-link" aria-label="Twitter/X" title="Twitter">✖</a>
+          <a href="#" class="social-link" aria-label="YouTube" title="YouTube">▶</a>
+          <a href="#" class="social-link" aria-label="Discord" title="Discord">🎮</a>
+          <a href="#" class="social-link" aria-label="TikTok" title="TikTok">♪</a>
+        </div>
+      </div>
+
+      <div>
+        <p class="footer-col-title">TIENDA</p>
+        <ul class="footer-links">
+          <li><a href="#">Gabinetes Arcade</a></li>
+          <li><a href="#">Consolas Retro</a></li>
+          <li><a href="#">Cartuchos</a></li>
+          <li><a href="#">Coleccionables</a></li>
+          <li><a href="#">Repuestos</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="footer-col-title">SERVICIOS</p>
+        <ul class="footer-links">
+          <li><a href="#">Restauración</a></li>
+          <li><a href="#">Soporte Técnico</a></li>
+          <li><a href="#">Tasación</a></li>
+          <li><a href="#">Alquiler</a></li>
+          <li><a href="#">Caza de Rarezas</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="footer-col-title">INFORMACIÓN</p>
+        <ul class="footer-links">
+          <li><a href="#">Sobre Nosotros</a></li>
+          <li><a href="#">Blog Retro</a></li>
+          <li><a href="#">Preguntas Frecuentes</a></li>
+          <li><a href="#">Política de Envíos</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2025 <span>ARCADE HUD</span>. Todos los derechos reservados. | Hecho con 🕹️ en Latinoamérica.</p>
+      <p class="footer-copy">GAME OVER? NO. CONTINUE? <span style="animation:coin-flicker 1.4s infinite">10...</span></p>
+    </div>
+  </footer>
+
+</div><!-- /page-wrapper -->
+
+<!-- ════════════════════ TICKER ════════════════════ -->
+<div class="ticker-wrap" aria-label="Novedades arcade" role="marquee">
+  <span class="ticker-label">NOVEDADES</span>
+  <div class="ticker-inner">
+    <div class="ticker-track">
+      <!-- Set duplicado para loop perfecto -->
+      <span class="ticker-item"><span class="t-dot">●</span> <strong>¡NUEVO!</strong> GABINETE PAC-MAN DISPONIBLE — INSERT COIN</span>
+      <span class="ticker-item"><span class="t-dot">●</span> LLEGARON 3 NEO GEO MVS — STOCK LIMITADO</span>
+      <span class="ticker-item"><span class="t-dot">●</span> <strong>OFERTA:</strong> DONKEY KONG ORIGINAL -20% ESTA SEMANA</span>
+      <span class="ticker-item"><span class="t-dot">●</span> NUEVO LOTE DE CARTUCHOS SNES — 48 TÍTULOS</span>
+      <span class="ticker-item"><span class="t-dot">●</span> <strong>RESTAURACIÓN:</strong> TURNO DISPONIBLE EN NOVIEMBRE</span>
+      <span class="ticker-item"><span class="t-dot">●</span> ENVÍO GRATIS EN COMPRAS MAYORES A $500 USD</span>
+      <span class="ticker-item"><span class="t-dot">●</span> <strong>¡NUEVO!</strong> FIGURA MEGA MAN EDICIÓN LIMITADA</span>
+      <span class="ticker-item"><span class="t-dot">●</span> COLECCIÓN COMPLETA ATARI 2600 — CONSULTAR</span>
+      <!-- Duplicado para scroll infinito sin salto -->
+      <span class="ticker-item"><span class="t-dot">●</span> <strong>¡NUEVO!</strong> GABINETE PAC-MAN DISPONIBLE — INSERT COIN</span>
+      <span class="ticker-item"><span class="t-dot">●</span> LLEGARON 3 NEO GEO MVS — STOCK LIMITADO</span>
+      <span class="ticker-item"><span class="t-dot">●</span> <strong>OFERTA:</strong> DONKEY KONG ORIGINAL -20% ESTA SEMANA</span>
+      <span class="ticker-item"><span class="t-dot">●</span> NUEVO LOTE DE CARTUCHOS SNES — 48 TÍTULOS</span>
+      <span class="ticker-item"><span class="t-dot">●</span> <strong>RESTAURACIÓN:</strong> TURNO DISPONIBLE EN NOVIEMBRE</span>
+      <span class="ticker-item"><span class="t-dot">●</span> ENVÍO GRATIS EN COMPRAS MAYORES A $500 USD</span>
+      <span class="ticker-item"><span class="t-dot">●</span> <strong>¡NUEVO!</strong> FIGURA MEGA MAN EDICIÓN LIMITADA</span>
+      <span class="ticker-item"><span class="t-dot">●</span> COLECCIÓN COMPLETA ATARI 2600 — CONSULTAR</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── TOGGLE TEMA ── */
+const toggle = document.getElementById('themeToggle');
+const label  = document.getElementById('toggleLabel');
+toggle.addEventListener('click', () => {
+  document.body.classList.toggle('light-mode');
+  const light = document.body.classList.contains('light-mode');
+  label.textContent = light ? 'DÍA' : 'NOCHE';
+  toggle.querySelector('.toggle-track').setAttribute('aria-checked', light);
+});
+
+/* ── SCROLL REVEAL ── */
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(
+  entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }),
+  { threshold: 0.1 }
+);
+revealEls.forEach(el => obs.observe(el));
+
+/* ── 3D CARD TILT (JS para mayor fidelidad, fallback en CSS) ── */
+document.querySelectorAll('[data-tilt]').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width  - 0.5) * 18;
+    const y = ((e.clientY - r.top)  / r.height - 0.5) * 18;
+    card.style.transform = `perspective(900px) rotateY(${x}deg) rotateX(${-y}deg) translateY(-8px) scale(1.02)`;
+    const glow = document.body.classList.contains('light-mode')
+      ? `0 18px 40px rgba(0,0,0,0.18), 0 0 28px rgba(255,85,0,0.45)`
+      : `0 18px 40px rgba(0,0,0,0.45), 0 0 28px rgba(0,242,254,0.55)`;
+    card.style.boxShadow = glow;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+    card.style.boxShadow = '';
+  });
+});
+
+/* ── FORMULARIO SIMULADO ── */
+function handleSubmit(e) {
+  e.preventDefault();
+  const st  = document.getElementById('fstatus');
+  const btn = e.target.querySelector('.btn-submit');
+  st.textContent = 'TRANSMITIENDO...';
+  btn.disabled   = true;
+  btn.style.opacity = '0.5';
+  setTimeout(() => {
+    st.textContent = 'MENSAJE ENVIADO ✓';
+    st.style.color = 'var(--text-subtitle-color)';
+    btn.textContent = '[ ENVIADO ]';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }, 1600);
+}
+
+/* ── NAV ACTIVE STATE POR SCROLL ── */
+const sections  = document.querySelectorAll('section[id]');
+const navLinks  = document.querySelectorAll('.nav-links a');
+const secObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => { l.style.color = ''; l.style.borderColor = ''; l.style.boxShadow = ''; });
+      const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+      if (active) {
+        active.style.color = 'var(--text-title-color)';
+        active.style.borderColor = 'var(--text-title-color)';
+      }
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => secObs.observe(s));
+</script>
+
+</body>
+</html>

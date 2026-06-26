@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PFO2-Medina Maira</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <header class="game-header">
+        <div class="header-left">
+            <span class="institution-tag">IFTS N.°29 • Front End 2° D</span>
+            <div class="user-profile">
+                <h1 class="player-name">Medina Maira</h1>
+                <img src="assets/img1.png" alt="Instituto" class="institute-logo">
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="theme-toggle" class="theme-toggle-btn">
+                <span class="pulse-icon"></span> ALTERNAR_MODO //
+            </button>
+        </div>
+    </header>
+
+    <div class="page-container">
+
+        <main class="left-side">
+            <div class="intro-content">
+                <div class="status-indicator">SYSTEM STATUS: ACTIVE</div>
+                <h2 class="main-title">PFO N°2</h2>
+                <h3 class="sub-title">Prompt en Agentes de Software de IA.</h3>
+                <p class="description">
+                    <strong>Descripción:</strong> Comparativa del rendimiento de Claude y OpenCode en desarrollo autónomo. A partir de un único prompt estricto y sin intervención manual en el código, se evalúa la capacidad de cada agente para estructurar y resolver el diseño responsive de una página web.
+                </p>
+            </div>
+        </main>
+
+        <aside class="right-side">
+            <div class="cards-asymmetric-grid">
+
+                <div class="card-wrapper item-1">
+                    <span class="num">STAGE 01</span>
+                    <a class="card card--stage-01" href="#" id="open-modal-btn">
+                        <div class="card-info">
+                            <h1>Prompt Base</h1>
+                            <p>Instrucción para la generación de landingpage 1 y 2 .</p>
+                            <div class="tags"><span class="tag">Ver</span></div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="card-wrapper item-2">
+                    <span class="num">STAGE 02</span>
+                    <a class="card card--stage-02" href="landing-agente-1/arcade-hud-v2-animated.html">
+                        <div class="card-info">
+                            <h1>Agente 1: Claude</h1>
+                            <p>Sitio generado por Claude Code </p>
+                            <div class="tags"><span class="tag">Ver</span></div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="card-wrapper item-3">
+                    <span class="num">STAGE 03</span>
+                    <a class="card card--stage-03" href="landing-agente-2/index.html">
+                        <div class="card-info">
+                            <h1>Agente 2: OpenCode</h1>
+                            <p>Sitio generado utilizando OpenCode para la comparativa.</p>
+                            <div class="tags"><span class="tag">Ver</span></div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+    <div id="modalPrompt" class="modal-overlay">
+        <div class="modal-content">
+            <span id="close-modal-btn" class="close-btn">&times;</span>
+            <h2 class="modal-title">PROMPT BASE UTILIZADO</h2>
+            <pre class="prompt-text">
+Actuá como un desarrollador Front-End experto en interfaces UI de videojuegos y Diseñador UX/UI Senior de estéticas Cyberpunk y Arcade de los 80/90. Tu objetivo es generar el código completo, limpio y funcional (HTML con CSS unificado en un solo bloque dentro de la etiqueta &lt;style&gt;) para una Landing Page hiper-animada de una tienda online de videojuegos arcade, consolas retro y coleccionables.
+
+Esta interfaz debe ser viva y dinámica, por lo que debés aplicar de forma estricta las siguientes animaciones modernas, guía de estilos, paleta de colores y restricciones de maquetación.
+
+1. GUÍA DE ESTILOS (CSS)
+  Configurá un sistema dinámico para modo noche (por defecto en :root) y modo día mediante la clase `.light-mode` aplicada al body. Implementá exactamente estas variables y tipografías de Google Fonts:
+
+  Tipografías:
+   - Títulos, botones, etiquetas y UI: 'Orbitron', sans-serif; (Estilo geométrico, usar siempre en mayúsculas).
+   - Bloques de texto, párrafos y datos: 'Share Tech Mono', monospace; (Estilo terminal de comandos).
+
+  CSS - Modo Noche (Cyberpunk/Arcade por defecto):
+   - bg-gradient: linear-gradient(135deg, #03001e 0%, #7303c0 50%, #ec38bc 100%);
+   - text-title-color: #00F2FE; (Cyan Neón Eléctrico)
+   - text-subtitle-color: #FFF200; (Amarillo Arcade)
+   - text-desc-color: #E2E8F0; (Blanco grisáceo suave)
+   - grid-color: rgba(0, 242, 254, 0.15);
+   - grid-glow: 0 0 12px rgba(0, 242, 254, 0.75);
+   - color-tomato: #FF0055; (Rosa Láser para efectos hover de acción)
+
+  CSS - Modo Día (High-Tech Sci-Fi - Activo con body.light-mode):
+   - bg-gradient: linear-gradient(135deg, #eef2f7 0%, #d9e2ec 100%);
+   - text-title-color: #0F172A; (Azul Pizarra Oscuro)
+   - text-subtitle-color: #FF5500; (Naranja E-Sports)
+   - text-desc-color: #334155; (Gris oscuro)
+   - grid-color: rgba(255, 85, 0, 0.2);
+   - grid-glow: 0 0 10px rgba(255, 85, 0, 0.6);
+   - color-tomato: #FF5500;
+
+2. CORE DE ANIMACIONES Y EFECTOS RETRO  (CSS)
+ Para erradicar la apariencia estática, programá los siguientes micro-efectos usando transiciones suaves y keyframes optimizados para GPU (transform y opacity):
+    - Efecto Pantalla CRT / Scanlines: Generá una capa pseudo-elemento fija sobre el fondo de la pantalla que use un gradiente lineal repetitivo muy sutil simulando líneas de televisión antigua. Añadí una animación de barrido vertical lento que simule el refresco de pantalla analógico.
+    - Texto con Efecto Glitch Neón: El título principal de la Hero Section debe tener un effecto de distorsión de color neón sutil usando sombras de texto cruzadas (text-shadow) que vibren de manera asíncrona mediante keyframes.
+    - Efecto "Insert Coin" Parpadeante: Los botones secundarios y las llamadas de atención decorativas deben tener un parpadeo de texto intermitente e irregular (flicker) imitando las bombillas físicas de los gabinetes arcade.
+    - Efecto de Levitación y Perspectiva 3D en Tarjetas (Hover): Al pasar el cursor sobre las 3 tarjetas de la Hero Section, estas deben reaccionar elevándose, inclinándose ligeramente en perspectiva 3D (transform: perspective(1000px) rotateX() rotateY()), y aumentando de forma fluida el radio de su resplandor perimetral (--grid-glow).
+    - Marquesina de Texto Infinita (Ticker de 8-Bits): Creá una barra horizontal deslizante continua en CSS puro para mostrar noticias de "Nuevos Ingresos Arcade" (ej. "¡NUEVO GABINETE PAC-MAN DISPONIBLE! - INSERT COIN"). Debe deslizarse de derecha a izquierda infinitamente de forma fluida y pausarse al pasar el cursor (hover).
+
+3. MAQUETACIÓN VISUAL Y ESTRUCTURA DE LA LANDING PAGE
+ Diseñá una maquetación fluida y totalmente responsiva con CSS Grid/Flexbox (aplicando 'min-width: 0;' en columnas para evitar roturas de texto), que contenga los siguientes bloques semánticos:
+    1. Cabecera (Header)
+    2. Hero Section (Estructura Dividida en 2 Columnas)
+    3. Descripción / Sobre Nosotros
+    4. Sección de Servicios o Características
+    5. Testimonios o Reseñas
+    6. Formulario de Contacto
+    7. Pie de Página (Footer)
+
+4. RESTRICCIONES DE DESARROLLO 
+    - Entregá TODO el código integrado en un único bloque de código legible (HTML con CSS embebido en &lt;style&gt; en el head).
+    - No utilices frameworks externos. Todo debe ser CSS nativo puro.
+    - Generá el código 100% finalizado y listo para visualizar.
+            </pre>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <p> // PFO_V2.0 // BY MEDINA MAIRA // &copy; 2026 </p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
