@@ -27,7 +27,7 @@ Para llevar a cabo la comparativa, se seleccionaron dos agentes de software aut�
 
 Los resultados de ambas páginas creadas con IA se integraron en una **Portada de Acceso** responsiva, diseñada como interfaz base con tarjetas interactivas y un modal que muestra el prompt inicial, permitiendo visualizar de forma clara y ordenada tanto la instrucción como los resultados obtenidos.
 
-## 2. 📂 Estructura y Organización de Carpetas
+## 2. 📂 Estructura-Organización
 El proyecto se organizó de manera modular y siguiendo las buenas prácticas de desarrollo, separando la estructura, los estilos y la lógica de comportamiento en directorios independientes:
 
 ```text
