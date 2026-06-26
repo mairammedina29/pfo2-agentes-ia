@@ -94,12 +94,41 @@ Se diseñó un prompt estructurado mediante, asignación de rol, restricciones r
 
 ## 5. 📸 Capturas de Pantalla 
 
-### Portal de Acceso Unificado (Interfaz HUD)
-
 ### Landing Page 1 - Generada por Claude coce
+| Vista 1 | Vista 2 |
+| :---: | :---: |
+| <img src="assets/imgRm/img6.png" width="300"> | <img src="assets/imgRm/img8.png" width="300"> |
+
+| Vista 3 | Vista 4 |
+| :---: | :---: |
+| <img src="assets/imgRm/img9.png" width="300"> | <img src="assets/imgRm/img30.png" width="300"> |
+
+| Vista 5 | Vista 6 |
+| :---: | :---: |
+| <img src="assets/imgRm/img13.png" width="300"> | <img src="assets/imgRm/img33.png" width="300"> |
+
+| Vista 7| Vista 8 |
+| :---: | :---: |
+| <img src="assets/imgRm/img23.png" width="300"> | <img src="assets/imgRm/img22.png" width="300"> |
+
 
 ### Landing Page 2 - Generada por Opend Code
 
+| Vista 1 | Vista 2 |
+| :---: | :---: |
+| <img src="assets/imgRm/img5.png" width="300"> | <img src="assets/imgRm/img7.png" width="300"> |
+
+| Vista 3 | Vista 4 |
+| :---: | :---: |
+| <img src="assets/imgRm/img11.png" width="300"> | <img src="assets/imgRm/img16.png" width="300"> |
+
+| Vista 5 | Vista 6 |
+| :---: | :---: |
+| <img src="assets/imgRm/img17.png" width="300"> | <img src="assets/imgRm/img19.png" width="300"> |
+
+| Vista 7 | Vista 8 |
+| :---: | :---: |
+| <img src="assets/imgRm/img24.png" width="300"> | <img src="assets/imgRm/img29.png" width="300"> |
 ---
 
 ## 6. 🏁 Conclusión
