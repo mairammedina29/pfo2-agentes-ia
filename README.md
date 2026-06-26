@@ -1,5 +1,5 @@
 # Práctica Formativa Obligatoria 2: Prompt en Agentes de IA
-**Asignatura:** Desarrollo de Sistemas Front End
+**Asignatura:** Desarrollo de Sistemas Web Front End
 ---
 
 ## 👤 Datos del Estudiante
@@ -85,7 +85,7 @@ Se diseñó un prompt estructurado mediante, asignación de rol, restricciones r
 * Se destaca el uso de colores neón, ticker de novedades y tarjetas interactivas que transmiten la atmósfera arcade/cyberpunk.
 * La interpretación del prompt fue muy fiel, logrando una experiencia visual rica y atractiva.
 
-### 🤖 Agente 2:OpenDCode
+### 🤖 Agente 2:Open Code
 * Produjo una Landing Page más sencilla y minimalista, con un diseño claro y funcional.
 * Mantiene la estética retro, pero con menos efectos y animaciones, priorizando la legibilidad y la estructura.
 * Aunque simplificó algunos elementos, cumplió correctamente con las secciones obligatorias y entregó un resultado sólido.
